@@ -66,18 +66,18 @@ public class MainActivity extends AppCompatActivity {
 
   private Assistant watsonAssistant;
   private SessionResponse watsonAssistantSession;
-  private SpeechToText speechService;
-  private TextToSpeech textToSpeech;
+  private SpeechToText speechToTextService;
+  private TextToSpeech textToSpeechService;
 
   private void createServices() {
-    watsonAssistant = new Assistant("2018-11-08", new IamAuthenticator(mContext.getString(R.string.assistant_apikey)));
+    watsonAssistant = new Assistant("2019-10-15", new IamAuthenticator(mContext.getString(R.string.assistant_apikey)));
     watsonAssistant.setServiceUrl(mContext.getString(R.string.assistant_url));
 
-    textToSpeech = new TextToSpeech(new IamAuthenticator((mContext.getString(R.string.TTS_apikey))));
-    textToSpeech.setServiceUrl(mContext.getString(R.string.TTS_url));
+    textToSpeechService = new TextToSpeech(new IamAuthenticator((mContext.getString(R.string.TTS_apikey))));
+    textToSpeechService.setServiceUrl(mContext.getString(R.string.TTS_url));
 
-    speechService = new SpeechToText(new IamAuthenticator(mContext.getString(R.string.STT_apikey)));
-    speechService.setServiceUrl(mContext.getString(R.string.STT_url));
+    speechToTextService = new SpeechToText(new IamAuthenticator(mContext.getString(R.string.STT_apikey)));
+    speechToTextService.setServiceUrl(mContext.getString(R.string.STT_url));
   }
 
   @Override
@@ -270,7 +270,7 @@ public class MainActivity extends AppCompatActivity {
   private class SayTask extends AsyncTask<String, Void, String> {
     @Override
     protected String doInBackground(String... params) {
-      streamPlayer.playStream(textToSpeech.synthesize(new SynthesizeOptions.Builder()
+      streamPlayer.playStream(textToSpeechService.synthesize(new SynthesizeOptions.Builder()
         .text(params[0])
         .voice(SynthesizeOptions.Voice.EN_US_LISAVOICE)
         .accept(HttpMediaType.AUDIO_WAV)
@@ -287,7 +287,7 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void run() {
           try {
-            speechService.recognizeUsingWebSocket(getRecognizeOptions(capture), new MicrophoneRecognizeDelegate());
+            speechToTextService.recognizeUsingWebSocket(getRecognizeOptions(capture), new MicrophoneRecognizeDelegate());
           } catch (Exception e) {
             showError(e);
           }
